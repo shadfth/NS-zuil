@@ -8,11 +8,7 @@ import os.path
 
 
 
-conn = psycopg2.connect(
-    host="localhost",
-    database="ns_zuil",
-    user="postgres",
-    password="Babyborn123")
+
 
 def bericht():
    bericht = str(input('wat wilt u kwijt?: '))
@@ -35,8 +31,9 @@ def tijd():
    now = datetime.now()
 
    # dd/mm/YY H:M:S
-   dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-   return dt_string
+   datum_string = now.strftime("%Y/%m/%d")
+   tijd_string = now.strftime("%H:%M:%S")
+   return tijd_string and datum_string
 
 
 def random_station():
@@ -53,11 +50,12 @@ with open('bericht.json','r') as file:
    print(type(data))
    data.append(message)
 
+with open('bericht.json', 'w') as file:
+   json.dump(data,file, indent=True)
+
 #print het meest recente bericht
 print(message)
 
-with open('bericht.json', 'w') as file:
-   json.dump(data,file, indent=True)
 def check_bericht():
    goedkeuring = input('type ja of nee: ')
    if goedkeuring == 'ja':
@@ -82,7 +80,7 @@ with open('moderator.json', 'w') as file:
 
 
 
-sg.theme('DarkAmber')   # Add a touch of color
+sg.theme('DarkAmber')   # beetje kleur
 # All the stuff inside your window.
 layout = [  [sg.Text('')],
             [sg.Text('Enter something on Row 2'), sg.InputText()],
@@ -97,3 +95,25 @@ while True:
         break
     print('You entered ', values[0])
     window.close()
+
+
+conn = psycopg2.connect(
+    host="localhost",
+    database="ns_zuil",
+    user="postgres",
+    password="Babyborn123",
+    port=5432)
+
+# Open a cursor to perform database operations
+cur = conn.cursor()
+
+script_bericht = 'INSERT INTO bericht (naam, bericht, tijd, datum) VALUES ()'
+
+# Execute a command: this creates a new table
+
+# Make the changes to the database persistent
+conn.commit()
+
+# Close communication with the database
+cur.close()
+conn.close()
