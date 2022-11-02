@@ -4,7 +4,7 @@ import json
 import psycopg2
 import PySimpleGUI as sg
 import os.path
-
+from database import insert_to_database
 
 
 
@@ -31,9 +31,18 @@ def tijd():
    now = datetime.now()
 
    # dd/mm/YY H:M:S
-   datum_string = now.strftime("%Y/%m/%d")
    tijd_string = now.strftime("%H:%M:%S")
-   return tijd_string and datum_string
+   return tijd_string
+
+
+
+def datum():
+
+   # datetime object containing current date and time
+   now = datetime.now()
+
+   datum_string = now.strftime("%Y/%m/%d")
+   return datum_string
 
 
 def random_station():
@@ -43,7 +52,21 @@ def random_station():
    if random_getal == 2:
       return 'Station Amsterdam'
    return 'Station Utrecht'
-message = f'{vraagnaam()} zegt {bericht()} op {tijd()}'
+
+
+message = {
+    'naam': vraagnaam(),
+    'bericht': bericht(),
+    'datum': datum(),
+    'tijd': tijd(),
+    'station': random_station()
+}
+scheldwoord = ['kanker','kut','fuck']
+
+#if scheldwoord in message:
+ #  print('u mag niet schelden!')
+#correct_bericht = message
+
 
 with open('bericht.json','r') as file:
    data = json.load(file)
@@ -52,24 +75,36 @@ with open('bericht.json','r') as file:
 
 with open('bericht.json', 'w') as file:
    json.dump(data,file, indent=True)
-
+#VANAF HIER
 #print het meest recente bericht
 print(message)
+def moderator_nummer():
+    ID = input('wat is uw ID: ')
+    return ID
 
 def check_bericht():
+   print(message)
    goedkeuring = input('type ja of nee: ')
    if goedkeuring == 'ja':
       return 'bericht goedgekeurd'
    if goedkeuring == 'nee':
       return 'bericht afgekeurd'
-   else: print('verkeerde input') and check_bericht()
+
 def vraagmail():
   email = str(input('wat is uw email?: '))
   return email
 
 
-beoordeeld = (f'{check_bericht()} door {vraagnaam()} met email: {vraagmail()} op de dag en tijd {tijd()} het bericht:{message}')
+beoordeeld = {
+    'ID': moderator_nummer(),
+    'naam':            vraagnaam(),
+    'mail':            vraagmail(),
+    'checked_bericht': check_bericht(),
+    'bericht':         message,
+    'datum':           datum(),
+    'tijd':            tijd()
 
+}
 with open('moderator.json','r') as file:
    data = json.load(file)
    print(type(data))
@@ -80,40 +115,4 @@ with open('moderator.json', 'w') as file:
 
 
 
-sg.theme('DarkAmber')   # beetje kleur
-# All the stuff inside your window.
-layout = [  [sg.Text('')],
-            [sg.Text('Enter something on Row 2'), sg.InputText()],
-            [sg.Button('Ok'), sg.Button('Cancel')] ]
-
-# Create the Window
-window = sg.Window('Window Title', layout)
-# Event Loop to process "events" and get the "values" of the inputs
-while True:
-    event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
-        break
-    print('You entered ', values[0])
-    window.close()
-
-
-conn = psycopg2.connect(
-    host="localhost",
-    database="ns_zuil",
-    user="postgres",
-    password="Babyborn123",
-    port=5432)
-
-# Open a cursor to perform database operations
-cur = conn.cursor()
-
-script_bericht = 'INSERT INTO bericht (naam, bericht, tijd, datum) VALUES ()'
-
-# Execute a command: this creates a new table
-
-# Make the changes to the database persistent
-conn.commit()
-
-# Close communication with the database
-cur.close()
-conn.close()
+insert_to_database(beoordeeld)
