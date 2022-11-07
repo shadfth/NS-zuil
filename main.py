@@ -1,9 +1,6 @@
 from datetime import datetime
 import random
 import json
-import psycopg2
-import PySimpleGUI as sg
-import os.path
 from database import insert_to_database
 
 
