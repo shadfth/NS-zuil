@@ -1,3 +1,4 @@
+import tkinter
 import tkinter as tk
 from tkinter import *
 import psycopg2.extras # import changed!
@@ -18,7 +19,7 @@ def zaandam():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)  # DictCursor, not the default cursor!
     query = """ SELECT     naam, bericht, station, tijd,datum
                 FROM       bericht
-                WHERE      station = 'Station Zaandam'
+                WHERE      station = 'Station Zaandam' and goedgekeurd = 'bericht goedgekeurd'
                 ORDER BY       bericht.datum, bericht.tijd ASC
                 LIMIT 5;"""
     cursor.execute(query)
@@ -30,7 +31,10 @@ def zaandam():
     for m in station_zaandam:
         message+= f'{m[0]} zegt: {m[1]} ({m[2]})\n\n'
     label['text']=message
-    CITY = 'Utrecht'
+    label2['text'] = 'Aanwezige faciliteiten: Park en Ride, Lift'
+
+
+    CITY = 'Zaandam'
     try:
         api_request = requests.get(
             'https://api.openweathermap.org/data/2.5/weather?lat=52.4420&lon=4.8292&appid=42bd458b01c0125965b416619a794910')
@@ -51,7 +55,7 @@ def zaandam():
 
     labeltemp["text"] = text = (f"Temperatuur in {CITY}: {temp_celsius:.2f}°C") + ( \
         f"\nDe temperatuur voelt aan als: {feels_like_celsius:.2f}°C")
-    root.configure(bg='yellow')
+    root.configure(bg='#ffc61e')
 
 def utrecht():
     connection_string = "host='localhost' dbname='ns_zuil' user='postgres' password='Babyborn123'"
@@ -59,7 +63,7 @@ def utrecht():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     query = """ SELECT     naam, bericht, station, tijd,datum
                     FROM       bericht
-                    WHERE      station = 'Station Utrecht'
+                    WHERE      station = 'Station Utrecht' and bericht = 'bericht goedgekeurd'
                     ORDER BY       bericht.datum, bericht.tijd ASC
                     LIMIT 5;"""
     cursor.execute(query)
@@ -71,7 +75,10 @@ def utrecht():
     for m in station_utrecht:
         message+= f'{m[0]} zegt: {m[1]} ({m[2]})\n\n'
     label['text']=message
-    labelimg.configure(image=root.toilet)
+    label2['text'] = 'Aanwezige faciliteiten: OV Fiets, Toilet'
+
+
+
     CITY = 'Utrecht'
     try:
         api_request = requests.get(
@@ -94,7 +101,7 @@ def utrecht():
 
     labeltemp["text"] = text=(f"Temperatuur in {CITY}: {temp_celsius:.2f}°C") + (\
        f"\nDe temperatuur voelt aan als: {feels_like_celsius:.2f}°C")
-    root.configure(bg='yellow')
+    root.configure(bg='#ffc61e')
 
 
 
@@ -105,7 +112,7 @@ def amsterdam():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)  # DictCursor, not the default cursor!
     query = """ SELECT     naam, bericht, station, tijd,datum
                     FROM       bericht
-                    WHERE      station = 'Station Amsterdam'
+                    WHERE      station = 'Station Amsterdam' and bericht = 'goedgekeurd'
                     ORDER BY       bericht.datum, bericht.tijd ASC
                     LIMIT 5;"""
     cursor.execute(query)
@@ -117,10 +124,9 @@ def amsterdam():
     for m in station_amsterdam:
         message+= f'{m[0]} zegt: {m[1]} ({m[2]})\n\n'
     label['text']=message
-    labelimg.configure(image=root.ovfiets,pady=10,padx=10)
-    root.ovfiets = PhotoImage(file='iloveimg-resized/img_ovfiets.png')
-    labelimg2 = Label(master=root, image=root.ovfiets)
-    labelimg2.pack()
+    label2['text']='Aanwezige faciliteiten: Park en Ride, Lift'
+
+
 
 
 
@@ -147,49 +153,71 @@ def amsterdam():
     description = response['weather'][0]['description']
     labeltemp['text'] = (f"Temperatuur in {CITY}: {temp_celsius:.2f}°C") + (
         f"\nDe temperatuur voelt aan als: {feels_like_celsius:.2f}°C")
-    root.configure(bg='yellow')
+    root.configure(bg='#ffc61e')
+
+
+
+
+
+
+
 
 root = Tk()
-frame1 = tk.Frame(root, width= 500, height=600)
-frame1.grid(row=0,column=0)
 
-nsfiets = ImageTk.PhotoImage(file='iloveimg-resized/img_ovfiets.png')
-ns_widget = tk.Label(frame1,image=nsfiets)
-nsfiets.image = nsfiets
-ns_widget.pack()
 
+# Add image file
+bg = PhotoImage(file="Nederlandse_Spoorwegen_logoGROOT.svg.png")
+
+# Create Canvas
+canvas1 = Canvas(root, width=400,
+                 height=400)
+
+canvas1.pack(fill="both", expand=True)
+
+# Display image
+canvas1.create_image(0, 0, image=bg,
+                     anchor="nw")
+
+
+
+
+faciliteiten=tkinter.Frame(root, bg='#ffc61e')
+faciliteiten.pack()
 
 labeltemp = tk.Label(master=root, text=(f"Temperatuur in : °C") + (
-        f"\nDe temperatuur voelt aan als: °C"), height=5, bg='yellow', fg='blue',
-                     font='arial 14')
+        f"\nDe temperatuur voelt aan als: °C"), height=5, bg='#ffc61e', fg='dark blue',font='arial 14')
 labeltemp.pack(pady=10, padx=17, )
 
-root.configure(background='yellow')
+root.configure(background='#ffc61e')
 
 root.geometry('800x500')
 
-label = Label(master=root, text='Welkom bij het Stationszuil!', font=('ariel,18'),background='yellow')
-label.pack()
-
-button = Button(master=root, text='Zaandam', command=zaandam,font=('ariel,18'))
-button.pack(pady=10)
-
-button = Button(master=root, text='Utrecht', command=utrecht, font=('ariel,18'))
-button.pack(pady=10)
-
-button = Button(master=root, text='Amsterdam', command=amsterdam, font=('ariel,18'))
-button.pack(pady=10)
-
-img = PhotoImage(file='nederlandse-spoorwegen-ns-logo.png')
-root.pr  = PhotoImage(file='nederlandse-spoorwegen-ns-logo.png')
-
-root.toilet = PhotoImage(file='iloveimg-resized/img_toilet.png')
-root.lift = PhotoImage(file='iloveimg-resized/img_lift.png')
-
-labelimg = Label(master=root, image=root.pr)
+label = Label(master=root, text='Welkom bij het Stationszuil!', font=('hind,18'),
+              justify= 'left', fg='dark blue', relief= 'sunken')
+labal_canvas = canvas1.create_window(900, 300,window=label)
+label2 = Label(master=root, text='', font=('ariel,18'),
+              justify= 'left', background='#ffc61e')
+label2.pack(side=TOP, anchor='nw')
 
 
-labelimg.pack()
+button1 = Button(master=root, text='Zaandam', command=zaandam,font=('ariel,18'))
+
+
+button2 = Button(master=root, text='Utrecht', command=utrecht, font=('ariel,18'))
+
+
+button3 = Button(master=root, text='Amsterdam', command=amsterdam, font=('ariel,18'))
+
+#Display Buttons
+button1_canvas = canvas1.create_window(1500, 150,
+
+                                       window=button1)
+
+button2_canvas = canvas1.create_window(200, 150,window=button2)
+
+button3_canvas = canvas1.create_window(900, 150,
+                                       window=button3)
+
 
 
 root.mainloop()

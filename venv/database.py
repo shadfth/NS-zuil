@@ -12,9 +12,9 @@ def insert_to_database(beoordeeld):
     # Open a cursor to perform database operations
     cur = conn.cursor()
 
-    script_bericht = f"""INSERT INTO bericht (naam, bericht, tijd, datum, station, moderator_nummer) 
-                        VALUES (%s,%s,%s,%s,%s,%s);"""
-    data = (beoordeeld['bericht']['naam'],beoordeeld['bericht']['bericht'],beoordeeld['bericht']['tijd'],beoordeeld['bericht']['datum'],beoordeeld['bericht']['station'],beoordeeld['ID'])
+    script_bericht = f"""INSERT INTO bericht (naam, bericht, tijd, datum, station, moderator_nummer, goedgekeurd) 
+                        VALUES (%s,%s,%s,%s,%s,%s,%s);"""
+    data = (beoordeeld['bericht']['naam'],beoordeeld['bericht']['bericht'],beoordeeld['bericht']['tijd'],beoordeeld['bericht']['datum'],beoordeeld['bericht']['station'],beoordeeld['ID'], beoordeeld['checked_bericht'])
     # Execute a command: this creates a new table
     cur.execute(script_bericht,data)
     # Make the changes to the database persistent
