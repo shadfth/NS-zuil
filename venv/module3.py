@@ -63,7 +63,7 @@ def utrecht():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     query = """ SELECT     naam, bericht, station, tijd,datum
                     FROM       bericht
-                    WHERE      station = 'Station Utrecht' and bericht = 'bericht goedgekeurd'
+                    WHERE      station = 'Station Utrecht' and goedgekeurd = 'bericht goedgekeurd'
                     ORDER BY       bericht.datum, bericht.tijd ASC
                     LIMIT 5;"""
     cursor.execute(query)
@@ -112,7 +112,7 @@ def amsterdam():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)  # DictCursor, not the default cursor!
     query = """ SELECT     naam, bericht, station, tijd,datum
                     FROM       bericht
-                    WHERE      station = 'Station Amsterdam' and bericht = 'goedgekeurd'
+                    WHERE      station = 'Station Amsterdam' and goedgekeurd = 'bericht goedgekeurd'
                     ORDER BY       bericht.datum, bericht.tijd ASC
                     LIMIT 5;"""
     cursor.execute(query)
